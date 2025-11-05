@@ -1,0 +1,10 @@
+[application]
+name = "drawo"
+version = "1.0.0"
+descriptions = "A drawing board that can be used for drawing on a touchscreen"
+
+[author]
+name = "Sipeed-iaw9lkm"
+
+[interaction]
+requires_user_input = true

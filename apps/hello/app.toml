@@ -1,0 +1,10 @@
+[application]
+name = "conway"
+version = "1.0.0"
+descriptions = "Basic test to power on the display."
+
+[author]
+name = "Sipeed-zepan"
+
+[interaction]
+requires_user_input = false
