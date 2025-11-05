@@ -1,0 +1,1 @@
+# Simulate and view the app's UI on a computer with a display simulator.
