@@ -1,0 +1,10 @@
+[application]
+name = "conway"
+version = "1.0.0"
+descriptions = "Conway's Game of Life Simulator."
+
+[author]
+name = "Sipeed-zepan"
+
+[interaction]
+requires_user_input = false

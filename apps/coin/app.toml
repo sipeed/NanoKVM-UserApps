@@ -1,0 +1,10 @@
+[application]
+name = "coin"
+version = "1.0.0"
+descriptions = "Stock Market Viewer Demo."
+
+[author]
+name = "Sipeed-zepan"
+
+[interaction]
+requires_user_input = false
