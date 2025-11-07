@@ -1,55 +1,55 @@
 # NanoKVM-UserApps
 
-NanoKVM-Desk is an IP-KVM product developed by Sipeed, featuring an AX630 as its core (dual-core A53@1.2GHz, built-in 3TOPS NPU), configured with 1GB LPDDR4 memory and 32GB eMMC, while supporting TF card expansion, and optional WiFi and POE configurations. In addition to powerful remote control functions, it has a 1.47-inch touch display and rotary knob, offering infinite DIY possibilities as a desktop accessory.
+NanoKVM-Desk是Sipeed推出的IPKVM产品，拥有AX630为核心（双核A53@1.2GHz，内置3Tops NPU）配置了1G LPDDR4内存和32GeMMC，同时支持TF卡扩展，并有可选的wifi、POE配置，除了强大的远程控制功能外，其拥有一块1.47寸触摸显示屏和旋钮，作为桌面摆件的形态有无限的DIY想象空间。
 
-This repository is an open-source UserApp repository. Users can download all applications from here using the "APP Hub" feature. If you have any ideas, you can refer to the documentation below to build your own applications. This repository welcomes your contributions as well. After our basic functionality review, your developed applications can be downloaded and used by all NanoKVM-Desk users.
+本仓库是开源的UserApp仓库，用户可以使用"APP Hub"功能下载这里的所有应用，当然如果你有任何想法，可以参考下面的文档构建自己的应用，本仓库也欢迎你的投稿，经过我们的基础功能审核后你开发的应用可以被所有NanoKVM-Desk用户下载和使用。
 
-## How to Build Your Own Application
+## 如何构建你自己的应用
 
-> You can send this document to an AI to assist in generating your own application!
+> 你可以将此文档发送给AI，来辅助生成你自己的应用！
 
-### Project Folder Introduction
+### 项目文件夹的介绍
 
-NanoKVM-Desk UserAPP scans all folders in the `/userapp` directory, with each folder representing an app. The folder name serves as the app name. Each folder must contain at least `main.py` and `app.toml`.
+NanoKVM-Desk UserAPP会扫描 `/userapp` 目录下所有的文件夹，每一个文件夹就是一个APP，文件夹名称就是APP名称。文件夹内至少包含 `main.py` 和 `app.toml`。
 
-`main.py` is the executable code, and `app.toml` is the configuration file with the following content:
+`main.py` 是运行的代码，`app.toml` 是配置文件，其内容如下：
 
 ```toml
 [application]
-name = "XXX"                        # Use folder name, displayed on startup (required and must match directory name)
-version = "1.0.0"                   # Used for version upgrade, displayed on startup (required for checking updates, must be SemVer subset MAJOR.MINOR.PATCH format)
-descriptions = "Example"            # Short app description, displayed during download/update (required for users to quickly understand app functionality)
+name = "XXX"                        # 使用文件夹名，启动时显示(必须且与目录名一致)
+version = "1.0.0"                   # 用作版本升级，启动时显示(必须为SemVer格式子集 MAJOR.MINOR.PATCH)
+descriptions = "Example"            # 用作App简短描述，在下载更新时显示(必须，用于用户快速了解app功能)
 
 [author]
-name = "Sipeed-xxx"                 # Fill in author name, displayed on startup (required)
-email = "xxx@sipeed.com"            # Facilitates user contact with author (optional)
+name = "Sipeed-xxx"                 # 填写作者名称，启动时显示(必须)
+email = "xxx@sipeed.com"            # 方便用户联系作者(可选)
 
 [interaction]
-requires_user_input = false         # Whether to require access to touch screen and rotary events; if true, program must have explicit exit mechanism (optional)
+requires_user_input = false         # 是否需要开放触摸屏以及旋钮事件；若为true，要求程序内必须有主动退出机制(可选)
 ```
 
-### Screen Information and Usage
+### 屏幕基础信息和使用方法
 
-The NanoKVM-Desk screen has a resolution of 320x172 and is accessible via `/dev/fb0`. The device features a 172x320 pixel RGB565 color display, accessible via the framebuffer device `/dev/fb0`. Applications can draw directly to this display using the framebuffer interface.
+NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配备了一个172x320像素的RGB565彩色显示屏，可通过帧缓冲设备 `/dev/fb0` 访问。应用程序可以直接绘制到该显示设备上。
 
-#### Display Characteristics
-- **Resolution**: 172x320 pixels (but logical screen is 320x172 - see rotation below)
-- **Color Depth**: 16-bit RGB565 format (5 bits red, 6 bits green, 5 bits blue)
-- **Framebuffer Device**: `/dev/fb0`
-- **Display Orientation**: The physical display is in portrait mode, but applications typically create landscape images (320x172) and rotate them 90 degrees counterclockwise for display.
+#### 显示特性
+- **分辨率**: 172x320 像素（但逻辑屏幕是 320x172 - 见下面的旋转说明）
+- **颜色深度**: 16 位 RGB565 格式 (红色 5 位，绿色 6 位，蓝色 5 位)
+- **帧缓冲设备**: `/dev/fb0`
+- **显示方向**: 物理显示屏为纵向模式，但应用程序通常创建横向图像 (320x172) 并逆时针旋转 90 度以供显示。
 
-#### Basic Display Usage
+#### 基本显示用法
 
-To use the display in your Python application:
+在 Python 应用程序中使用显示设备：
 
-1. **Set up constants** for the physical display dimensions:
+1. **设置物理显示尺寸的常量**:
    ```python
    PHYSICAL_WIDTH = 172
    PHYSICAL_HEIGHT = 320
-   BPP = 16  # Bits per pixel
+   BPP = 16  # 每像素位数
    ```
 
-2. **Create a display class** that interfaces with the framebuffer:
+2. **创建与帧缓冲区接口的显示类**:
    ```python
    import mmap
    import os
@@ -63,7 +63,7 @@ To use the display in your Python application:
            self.bpp = BPP
            self.fb_size = self.physical_width * self.physical_height * (self.bpp // 8)
 
-           # Open framebuffer device
+           # 打开帧缓冲设备
            self.fb_fd = os.open(fb_device, os.O_RDWR)
            self.fb_mmap = mmap.mmap(
                self.fb_fd, self.fb_size, mmap.MAP_SHARED, mmap.PROT_WRITE
@@ -73,51 +73,51 @@ To use the display in your Python application:
            )
 
        def rgb_to_rgb565(self, r, g, b):
-           """Convert 8-bit RGB to RGB565 format"""
+           """将 8 位 RGB 转换为 RGB565 格式"""
            return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
        def clear_screen(self, color=0x0000):
-           """Clear screen with specified color"""
+           """使用指定颜色清屏"""
            self.fb_array.fill(color)
 
        def _display_image(self, logical_img):
-           """Rotate logical image and display on physical screen"""
-           # Rotate logical image 90 degrees counterclockwise to get physical image
+           """旋转逻辑图像并在物理屏幕上显示"""
+           # 将逻辑图像逆时针旋转 90 度以获得物理图像
            physical_img = logical_img.rotate(90, expand=True)
 
-           # Convert to RGB565 and copy to framebuffer
+           # 转换为 RGB565 并复制到帧缓冲区
            rgb_array = np.array(physical_img)
            r = (rgb_array[:, :, 0] >> 3).astype(np.uint16)
            g = (rgb_array[:, :, 1] >> 2).astype(np.uint16)
            b = (rgb_array[:, :, 2] >> 3).astype(np.uint16)
            rgb565 = (r << 11) | (g << 5) | b
 
-           # Directly copy entire array to framebuffer
+           # 直接复制整个数组到帧缓冲区
            self.fb_array[:, :] = rgb565
 
        def close(self):
-           """Close resources"""
+           """关闭资源"""
            self.fb_mmap.close()
            os.close(self.fb_fd)
    ```
 
-3. **Draw content** to the display:
+3. **在显示上绘制内容**:
    ```python
    def main():
        display = RGB565Display()
        
        try:
-           # Create a logical landscape image (320x172)
+           # 创建逻辑横向图像 (320x172)
            logical_img = Image.new("RGB", (320, 172), (0, 0, 0))
            draw = ImageDraw.Draw(logical_img)
 
-           # Draw your content (e.g., rectangles, text)
-           draw.rectangle([10, 10, 100, 100], fill=(255, 0, 0))  # Red rectangle
+           # 绘制内容 (例如，矩形、文字)
+           draw.rectangle([10, 10, 100, 100], fill=(255, 0, 0))  # 红色矩形
            
-           # Display the image
+           # 显示图像
            display._display_image(logical_img)
            
-           # Wait for some time
+           # 等待一段时间
            import time
            time.sleep(5)
            
@@ -128,22 +128,22 @@ To use the display in your Python application:
        main()
    ```
 
-#### Best Practices for Display Usage
-- Always rotate logical landscape images (320x172) counterclockwise to match the physical portrait display (172x320)
-- Use efficient drawing methods when possible to minimize rendering time
-- Close resources properly in a `finally` block or context manager to prevent resource leaks
-- Consider performance when drawing frequently updated content (e.g., animations)
+#### 显示用法的最佳实践
+- 始终将逻辑横向图像 (320x172) 逆时针旋转以匹配物理纵向显示 (172x320)
+- 尽可能使用高效的绘图方法以减少渲染时间
+- 在 `finally` 块或上下文管理器中正确关闭资源，以防止资源泄漏
+- 在绘制频繁更新的内容时考虑性能 (例如，动画)
 
-### Input Events Information and Usage
+### 输入事件基础信息和使用方法
 
-NanoKVM-Desk has three types of input events: rotary rotation, rotary press, and touch.
+NanoKVM-Desk有旋钮旋转，按下和触摸三种输入事件。
 
-> When using input events, you need to declare `requires_user_input = true` in `app.toml`, and your program must have an explicit exit mechanism, otherwise you cannot exit to NanoKVM-UI;
-> If your program doesn't need touch or rotary input events, configure the field as `requires_user_input = false` or omit it, and NanoKVM-UI will exit the program when the screen is touched or the button is pressed.
+> 如果要使用输入事件时，需要在 `app.toml` 中声明 `requires_user_input = true`，同时在你的程序中必须有明确的主动退出机制，否则无法退出至NanoKVM-UI；
+> 若你的程序不需要触摸或旋钮的输入事件，配置字段 `requires_user_input = false` 或不写，NanoKVM-UI将会在点击屏幕或按下按钮后退出程序。
 
-#### Input Device Locations
+#### 输入设备位置
 
-- **Rotary rotation events**: `/dev/input/event0`
+- **旋钮旋转事件**: `/dev/input/event0`
   ```shell
   root@kvm-72d6:~# evtest /dev/input/event0
   Input driver version is 1.0.1
@@ -165,7 +165,7 @@ NanoKVM-Desk has three types of input events: rotary rotation, rotary press, and
   Event: time 1762504084.714448, -------------- SYN_REPORT ------------
   ```
 
-- **Rotary press/hold/release events**: `/dev/input/event1`
+- **旋钮按下、保持、抬起事件**: `/dev/input/event1`
   ```shell
   root@kvm-72d6:~# evtest /dev/input/event1
   Input driver version is 1.0.1
@@ -191,7 +191,7 @@ NanoKVM-Desk has three types of input events: rotary rotation, rotary press, and
   Event: time 1762504201.724694, -------------- SYN_REPORT ------------
   ```
 
-- **Touch screen events**: `/dev/input/event2`
+- **触摸屏事件**: `/dev/input/event2`
   ```shell
   root@kvm-72d6:~# evtest /dev/input/event2
   Input driver version is 1.0.1
@@ -248,22 +248,22 @@ NanoKVM-Desk has three types of input events: rotary rotation, rotary press, and
   Event: time 1762504306.749866, -------------- SYN_REPORT ------------
   ```
 
-## Contributing to the Software Repository
+### 示例
 
-We encourage the community to create and upload their own applications to this repository! This serves as the software source for NanoKVM-Desk, and your contributions make our ecosystem richer.
+`apps` 目录中的几个示例，可能帮你更好的构建自己的应用：
+- `hello`: 基本显示功能
+- `drawo`: 带有触摸屏支持的绘图应用程序
 
-### How to Upload Your Application
+## 贡献到软件源
 
-1. Create a pull request with your application in the `apps` folder
-2. Your application will go through a simple review process (as an open source community, we only review basic functionality; security is the responsibility of the developer)
-3. Once approved, your application will be available in the NanoKVM-Desk APP Hub
+我们鼓励社区创建并上传他们自己的应用程序到此仓库！这作为 NanoKVM-Desk 的软件源，您的贡献使我们的生态系统更加丰富。
 
-### How to Report UserAPP Issues
+### 如何上传您的应用程序
 
-Please report issues in the issues section of this repository, and @ the author specified in the app.toml file of the corresponding app.
+1. 创建一个 pull request，将您的应用程序放入 `apps` 文件夹
+2. 您的应用程序将经过简单的审核流程（作为开源社区，我们只审核基本功能；安全性由开发者保证）
+3. 一经批准，您的应用程序将在 NanoKVM-Desk APP Hub 中提供
 
-### Examples
+### 如何上报UserAPP的问题
 
-Several examples in the `apps` directory may help you better build your own applications:
-- `hello`: Basic display functionality
-- `drawo`: Drawing application with touch screen support
+请在本仓库的issus下报告问题，并@对应app下app.toml的作者
