@@ -60,9 +60,13 @@ for folder_name in os.listdir(ROOT_DIR):
             data = toml.load(app_toml_path)
 
             if "application" in data:
-                app_info["application_name"] = data["application"].get(
-                    "name", folder_name
-                )
+                app_name_tmp = data["application"].get("name", folder_name)
+                if app_info["application_name"] != app_name_tmp:
+                    print(
+                        f"Error: The folder name {folder_name} does not match the app name {app_name_tmp}"
+                    )
+                    raise RuntimeError("")
+
                 version = data["application"].get("version", "1.0.0")
 
                 if not SEMVER_REGEX.match(version):

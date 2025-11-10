@@ -1,5 +1,5 @@
 [application]
-name = "conway"
+name = "hello"
 version = "1.0.0"
 descriptions = "Basic test to power on the display."
 

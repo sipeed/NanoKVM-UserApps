@@ -5,16 +5,16 @@ application_version = "1.0.0"
 application_descriptions = "Conway's Game of Life Simulator."
 author_name = "Sipeed-zepan"
 interaction_requires_user_input = false
-files = ["conway/main.py", "conway/app.toml"]
+files = [ "conway/main.py", "conway/app.toml",]
 
 [[apps]]
 folder = "hello"
-application_name = "conway"
+application_name = "hello"
 application_version = "1.0.0"
 application_descriptions = "Basic test to power on the display."
 author_name = "Sipeed-zepan"
 interaction_requires_user_input = false
-files = ["hello/main.py", "hello/app.toml"]
+files = [ "hello/main.py", "hello/app.toml",]
 
 [[apps]]
 folder = "tomato"
@@ -23,7 +23,7 @@ application_version = "1.0.0"
 application_descriptions = "Pomodoro Timer: 25-min work, 5-min break."
 author_name = "Sipeed-bugu"
 interaction_requires_user_input = false
-files = ["tomato/main.py", "tomato/app.toml"]
+files = [ "tomato/main.py", "tomato/app.toml",]
 
 [[apps]]
 folder = "coin"
@@ -32,7 +32,7 @@ application_version = "1.0.0"
 application_descriptions = "Stock Market Viewer Demo."
 author_name = "Sipeed-zepan"
 interaction_requires_user_input = false
-files = ["coin/main.py", "coin/app.toml"]
+files = [ "coin/main.py", "coin/app.toml",]
 
 [[apps]]
 folder = "drawo"
@@ -41,4 +41,5 @@ application_version = "1.0.0"
 application_descriptions = "A drawing board that can be used for drawing on a touchscreen"
 author_name = "Sipeed-iaw9lkm"
 interaction_requires_user_input = true
-files = ["drawo/main.py", "drawo/app.toml"]
+files = [ "drawo/main.py", "drawo/app.toml",]
+
