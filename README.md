@@ -1,6 +1,6 @@
 # NanoKVM-UserApps
 
-NanoKVM-Desk is an IP-KVM product developed by Sipeed, featuring an AX630 as its core (dual-core A53@1.2GHz, built-in 3TOPS NPU), configured with 1GB LPDDR4 memory and 32GB eMMC, while supporting TF card expansion, and optional WiFi and POE configurations. In addition to powerful remote control functions, it has a 1.47-inch touch display and rotary knob, offering infinite DIY possibilities as a desktop accessory.
+NanoKVM-Desk is an IP-KVM product developed by Sipeed, featuring an AX630 as its core (dual-core <A53@1.2GHz>, built-in 3TOPS NPU), configured with 1GB LPDDR4 memory and 32GB eMMC, while supporting TF card expansion, and optional WiFi and POE configurations. In addition to powerful remote control functions, it has a 1.47-inch touch display and rotary knob, offering infinite DIY possibilities as a desktop accessory.
 
 This repository is an open-source UserApp repository. Users can download all applications from here using the "APP Hub" feature. If you have any ideas, you can refer to the documentation below to build your own applications. This repository welcomes your contributions as well. After our basic functionality review, your developed applications can be downloaded and used by all NanoKVM-Desk users.
 
@@ -33,6 +33,7 @@ requires_user_input = false         # Whether to require access to touch screen 
 The NanoKVM-Desk screen has a resolution of 320x172 and is accessible via `/dev/fb0`. The device features a 172x320 pixel RGB565 color display, accessible via the framebuffer device `/dev/fb0`. Applications can draw directly to this display using the framebuffer interface.
 
 #### Display Characteristics
+
 - **Resolution**: 172x320 pixels (but logical screen is 320x172 - see rotation below)
 - **Color Depth**: 16-bit RGB565 format (5 bits red, 6 bits green, 5 bits blue)
 - **Framebuffer Device**: `/dev/fb0`
@@ -43,6 +44,7 @@ The NanoKVM-Desk screen has a resolution of 320x172 and is accessible via `/dev/
 To use the display in your Python application:
 
 1. **Set up constants** for the physical display dimensions:
+
    ```python
    PHYSICAL_WIDTH = 172
    PHYSICAL_HEIGHT = 320
@@ -50,6 +52,7 @@ To use the display in your Python application:
    ```
 
 2. **Create a display class** that interfaces with the framebuffer:
+
    ```python
    import mmap
    import os
@@ -102,6 +105,7 @@ To use the display in your Python application:
    ```
 
 3. **Draw content** to the display:
+
    ```python
    def main():
        display = RGB565Display()
@@ -129,124 +133,173 @@ To use the display in your Python application:
    ```
 
 #### Best Practices for Display Usage
+
 - Always rotate logical landscape images (320x172) counterclockwise to match the physical portrait display (172x320)
 - Use efficient drawing methods when possible to minimize rendering time
 - Close resources properly in a `finally` block or context manager to prevent resource leaks
 - Consider performance when drawing frequently updated content (e.g., animations)
 
-### Input Events Information and Usage
+#### Input Events Information and Usage
 
 NanoKVM-Desk has three types of input events: rotary rotation, rotary press, and touch.
 
 > When using input events, you need to declare `requires_user_input = true` in `app.toml`, and your program must have an explicit exit mechanism, otherwise you cannot exit to NanoKVM-UI;
 > If your program doesn't need touch or rotary input events, configure the field as `requires_user_input = false` or omit it, and NanoKVM-UI will exit the program when the screen is touched or the button is pressed.
 
-#### Input Device Locations
+##### Input Devices Description
 
-- **Rotary rotation events**: `/dev/input/event0`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event0
-  Input driver version is 1.0.1
-  Input device ID: bus 0x19 vendor 0x0 product 0x0 version 0x0
-  Input device name: "rotary@0"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 2 (EV_REL)
-      Event code 0 (REL_X)
-  Properties:
-  Testing ... (interrupt to exit)
-  Event: time 1762504082.820148, type 2 (EV_REL), code 0 (REL_X), value 1
-  Event: time 1762504082.820148, -------------- SYN_REPORT ------------
-  Event: time 1762504082.861754, type 2 (EV_REL), code 0 (REL_X), value 1
-  Event: time 1762504082.861754, -------------- SYN_REPORT ------------
-  Event: time 1762504084.692300, type 2 (EV_REL), code 0 (REL_X), value -1
-  Event: time 1762504084.692300, -------------- SYN_REPORT ------------
-  Event: time 1762504084.714448, type 2 (EV_REL), code 0 (REL_X), value -1
-  Event: time 1762504084.714448, -------------- SYN_REPORT ------------
-  ```
+This system uses three input devices: rotary rotation events, rotary press/hold/release events, and a touch screen. The `/dev/input/eventN` numbering is dynamic and may change between boots due to device enumeration order; therefore you must not rely on fixed event numbers. Use the kernel-registered device name under sysfs (`/sys/class/input/eventN/device/name`) to reliably identify devices.
 
-- **Rotary press/hold/release events**: `/dev/input/event1`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event1
-  Input driver version is 1.0.1
-  Input device ID: bus 0x19 vendor 0x1 product 0x1 version 0x100
-  Input device name: "gpio_keys"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 1 (EV_KEY)
-      Event code 28 (KEY_ENTER)
-  Key repeat handling:
-    Repeat type 20 (EV_REP)
-      Repeat code 0 (REP_DELAY)
-        Value    250
-      Repeat code 1 (REP_PERIOD)
-        Value     33
-  Properties:
-  Testing ... (interrupt to exit)
-  Event: time 1762504201.120498, type 1 (EV_KEY), code 28 (KEY_ENTER), value 1
-  Event: time 1762504201.120498, -------------- SYN_REPORT ------------
-  Event: time 1762504201.371193, type 1 (EV_KEY), code 28 (KEY_ENTER), value 2
-  Event: time 1762504201.721202, -------------- SYN_REPORT ------------
-  Event: time 1762504201.724694, type 1 (EV_KEY), code 28 (KEY_ENTER), value 0
-  Event: time 1762504201.724694, -------------- SYN_REPORT ------------
-  ```
+##### Typical device mapping (example)
 
-- **Touch screen events**: `/dev/input/event2`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event2
-  Input driver version is 1.0.1
-  Input device ID: bus 0x18 vendor 0x0 product 0x0 version 0x0
-  Input device name: "hyn_ts"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 1 (EV_KEY)
-      Event code 325 (BTN_TOOL_FINGER)
-      Event code 330 (BTN_TOUCH)
-    Event type 3 (EV_ABS)
-      Event code 47 (ABS_MT_SLOT)
-        Value      0
-        Min        0
-        Max        5
-      Event code 48 (ABS_MT_TOUCH_MAJOR)
-        Value      0
-        Min        0
-        Max      255
-      Event code 50 (ABS_MT_WIDTH_MAJOR)
-        Value      0
-        Min        0
-        Max      200
-      Event code 53 (ABS_MT_POSITION_X)
-        Value      0
-        Min        0
-        Max      172
-      Event code 54 (ABS_MT_POSITION_Y)
-        Value      0
-        Min        0
-        Max      320
-      Event code 57 (ABS_MT_TRACKING_ID)
-        Value      0
-        Min        0
-        Max        5
-      Event code 58 (ABS_MT_PRESSURE)
-        Value      0
-        Min        0
-        Max      255
-  Properties:
-    Property type 1 (INPUT_PROP_DIRECT)
-  Testing ... (interrupt to exit)
-  Event: time 1762504306.703328, type 1 (EV_KEY), code 330 (BTN_TOUCH), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value 25
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value 0
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 53 (ABS_MT_POSITION_X), value 71
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 54 (ABS_MT_POSITION_Y), value 165
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 48 (ABS_MT_TOUCH_MAJOR), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 50 (ABS_MT_WIDTH_MAJOR), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 58 (ABS_MT_PRESSURE), value 10
-  Event: time 1762504306.703328, -------------- SYN_REPORT ------------
-  Event: time 1762504306.749866, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value -1
-  Event: time 1762504306.749866, type 1 (EV_KEY), code 330 (BTN_TOUCH), value 0
-  Event: time 1762504306.749866, -------------- SYN_REPORT ------------
-  ```
+- Rotary rotation (relative): driver name `rotary@0`, reports EV_REL / REL_X, used for incremental adjustments, paging or focus movement.
+- Rotary button (press/hold/release): driver name `gpio_keys`, reports EV_KEY (KEY_ENTER), supports press/release and key repeat for long press.
+- Touchscreen: driver name `hyn_ts`, reports multitouch events (EV_ABS, ABS_MT_*), including coordinates, pressure and tracking id.
+
+##### Behavior notes
+
+- Do not hard-code `/dev/input/event0` style paths; resolve the mapping at runtime by inspecting sysfs.
+- If a device name is not found, returning the original name helps diagnostics (indicates device not ready or different name).
+- Accessing `/dev/input` devices usually requires root privileges or proper udev rules to grant access.
+
+##### Complete Python example
+
+```python
+import os
+import re
+from typing import Dict
+
+class InputDeviceFinder:
+    """Scan /sys/class/input, build eventN -> device name map, and resolve devices by name to /dev/input/eventN."""
+
+    def __init__(self, input_root: str = "/sys/class/input") -> None:
+        self.input_root = input_root
+        self.event_regex = re.compile(r"event(\d+)$")
+        self.devices = self._get_event_device_names()
+
+    def _get_event_device_names(self) -> Dict[int, str]:
+        """Return a mapping { event_num: device_name } by scanning input_root."""
+        event_map: Dict[int, str] = {}
+
+        try:
+            for entry in os.scandir(self.input_root):
+                if not entry.is_dir():
+                    continue
+
+                m = self.event_regex.match(entry.name)
+                if not m:
+                    continue
+
+                try:
+                    event_num = int(m.group(1))
+                except ValueError:
+                    continue
+
+                name_path = os.path.join(entry.path, "device", "name")
+                if not os.path.exists(name_path):
+                    continue
+
+                try:
+                    with open(name_path, "r", encoding="utf-8") as f:
+                        name = f.readline().strip()
+                        if name:
+                            event_map[event_num] = name
+                except Exception:
+                    continue
+        except FileNotFoundError:
+            pass
+
+        return event_map
+
+    def find_devices(self, targets: Dict[str, str]) -> Dict[str, str]:
+        """Resolve device names to /dev/input/eventN paths.
+
+        @param targets: e.g. {"rotary": "rotary@0", "key": "gpio_keys"}
+        @return: e.g. {"rotary": "/dev/input/event2", ...}
+                 If not found, the value will be the original name for troubleshooting.
+        """
+        result: Dict[str, str] = {}
+
+        for role, name in targets.items():
+            found = False
+            for n, dev_name in self.devices.items():
+                if dev_name == name:
+                    result[role] = f"/dev/input/event{n}"
+                    found = True
+                    break
+            if not found:
+                result[role] = name
+
+        return result
+
+
+if __name__ == "__main__":
+    finder = InputDeviceFinder()
+    devices = finder.find_devices({
+        "rotary": "rotary@0",
+        "key": "gpio_keys",
+        "touch": "hyn_ts",
+    })
+
+    print("Detected devices:", devices)
+    # Example output: Detected devices: {'rotary': '/dev/input/event0', 'key': '/dev/input/event1', 'touch': '/dev/input/event2'}
+```
+
+##### Additional recommendations
+
+- For increased robustness, when name lookup fails, try parsing `/proc/bus/input/devices` or use `udevadm`/`libinput` to obtain richer device metadata.
+- In user-space programs, open `/dev/input/eventX` via `evdev`/`libinput` libraries to read events. For services, consider caching the mapping for a short time and re-scan on device changes.
+
+#### Automatic Loading of Third-Party Python Libraries
+
+This approach is suitable when:
+
+- You want your application to load dependencies only when they are needed.
+- You prefer not to pre-package many libraries in your system image or firmware.
+- You want the application to run out-of-the-box without requiring users to install dependencies manually.
+
+The following class can be used directly:
+
+```python
+import importlib
+import subprocess
+import sys
+
+class AutoImport:
+    @staticmethod
+    def import_package(pip_name: str, import_name: str | None = None):
+        import_name = import_name or pip_name
+
+        try:
+            package = importlib.import_module(import_name)
+            print(f"Package '{import_name}' imported successfully.")
+            return package
+        except ImportError:
+            print(f"Package '{import_name}' not found. Trying to install '{pip_name}'...")
+            AutoImport.install_package(pip_name)
+
+            package = importlib.import_module(import_name)
+            print(f"Package '{import_name}' imported successfully after installation.")
+            return package
+
+    @staticmethod
+    def install_package(pip_name: str):
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name])
+            print(f"Package '{pip_name}' installed successfully.")
+        except subprocess.CalledProcessError:
+            print(f"Failed to install '{pip_name}'. Check network or permissions.")
+```
+
+Example: Load `evdev` on demand for handling input events:
+
+```python
+evdev = AutoImport.import_package("evdev")
+InputDevice = evdev.InputDevice
+ecodes = evdev.ecodes
+```
+
+If `evdev` is already installed, it will be imported directly. Otherwise, it will be installed automatically before continuing.
 
 ## Contributing to the Software Repository
 
@@ -265,5 +318,6 @@ Please report issues in the issues section of this repository, and @ the author 
 ### Examples
 
 Several examples in the `apps` directory may help you better build your own applications:
+
 - `hello`: Basic display functionality
 - `drawo`: Drawing application with touch screen support

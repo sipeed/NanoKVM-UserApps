@@ -1,6 +1,6 @@
 # NanoKVM-UserApps
 
-NanoKVM-Desk是Sipeed推出的IPKVM产品，拥有AX630为核心（双核A53@1.2GHz，内置3Tops NPU）配置了1G LPDDR4内存和32GeMMC，同时支持TF卡扩展，并有可选的wifi、POE配置，除了强大的远程控制功能外，其拥有一块1.47寸触摸显示屏和旋钮，作为桌面摆件的形态有无限的DIY想象空间。
+NanoKVM-Desk是Sipeed推出的IPKVM产品，拥有AX630为核心（双核<A53@1.2GHz>，内置3Tops NPU）配置了1G LPDDR4内存和32GeMMC，同时支持TF卡扩展，并有可选的wifi、POE配置，除了强大的远程控制功能外，其拥有一块1.47寸触摸显示屏和旋钮，作为桌面摆件的形态有无限的DIY想象空间。
 
 本仓库是开源的UserApp仓库，用户可以使用"APP Hub"功能下载这里的所有应用，当然如果你有任何想法，可以参考下面的文档构建自己的应用，本仓库也欢迎你的投稿，经过我们的基础功能审核后你开发的应用可以被所有NanoKVM-Desk用户下载和使用。
 
@@ -33,6 +33,7 @@ requires_user_input = false         # 是否需要开放触摸屏以及旋钮事
 NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配备了一个172x320像素的RGB565彩色显示屏，可通过帧缓冲设备 `/dev/fb0` 访问。应用程序可以直接绘制到该显示设备上。
 
 #### 显示特性
+
 - **分辨率**: 172x320 像素（但逻辑屏幕是 320x172 - 见下面的旋转说明）
 - **颜色深度**: 16 位 RGB565 格式 (红色 5 位，绿色 6 位，蓝色 5 位)
 - **帧缓冲设备**: `/dev/fb0`
@@ -43,6 +44,7 @@ NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配�
 在 Python 应用程序中使用显示设备：
 
 1. **设置物理显示尺寸的常量**:
+
    ```python
    PHYSICAL_WIDTH = 172
    PHYSICAL_HEIGHT = 320
@@ -50,6 +52,7 @@ NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配�
    ```
 
 2. **创建与帧缓冲区接口的显示类**:
+
    ```python
    import mmap
    import os
@@ -102,6 +105,7 @@ NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配�
    ```
 
 3. **在显示上绘制内容**:
+
    ```python
    def main():
        display = RGB565Display()
@@ -129,128 +133,186 @@ NanoKVM-Desk的屏幕分辨率为320*172，通过 `/dev/fb0` 访问。设备配�
    ```
 
 #### 显示用法的最佳实践
+
 - 始终将逻辑横向图像 (320x172) 逆时针旋转以匹配物理纵向显示 (172x320)
 - 尽可能使用高效的绘图方法以减少渲染时间
 - 在 `finally` 块或上下文管理器中正确关闭资源，以防止资源泄漏
 - 在绘制频繁更新的内容时考虑性能 (例如，动画)
 
-### 输入事件基础信息和使用方法
+#### 输入事件说明与使用指南
 
-NanoKVM-Desk有旋钮旋转，按下和触摸三种输入事件。
+NanoKVM-Desk 系统支持三类输入事件：旋钮旋转、旋钮按压以及触摸输入。
 
-> 如果要使用输入事件时，需要在 `app.toml` 中声明 `requires_user_input = true`，同时在你的程序中必须有明确的主动退出机制，否则无法退出至NanoKVM-UI；
-> 若你的程序不需要触摸或旋钮的输入事件，配置字段 `requires_user_input = false` 或不写，NanoKVM-UI将会在点击屏幕或按下按钮后退出程序。
+> 当你的应用需要使用输入事件时，必须在 `app.toml` 中声明 `requires_user_input = true`，并且应用本身必须实现明确的退出机制，否则将无法返回到 NanoKVM-UI。
+> 如果你的程序不需要触摸或旋钮输入事件，则可将该字段设为 `false` 或直接省略。此时，用户触摸屏幕或按下按键时系统将自动退出当前应用并返回 UI。
 
-#### 输入设备位置
+##### 输入设备概述
 
-- **旋钮旋转事件**: `/dev/input/event0`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event0
-  Input driver version is 1.0.1
-  Input device ID: bus 0x19 vendor 0x0 product 0x0 version 0x0
-  Input device name: "rotary@0"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 2 (EV_REL)
-      Event code 0 (REL_X)
-  Properties:
-  Testing ... (interrupt to exit)
-  Event: time 1762504082.820148, type 2 (EV_REL), code 0 (REL_X), value 1
-  Event: time 1762504082.820148, -------------- SYN_REPORT ------------
-  Event: time 1762504082.861754, type 2 (EV_REL), code 0 (REL_X), value 1
-  Event: time 1762504082.861754, -------------- SYN_REPORT ------------
-  Event: time 1762504084.692300, type 2 (EV_REL), code 0 (REL_X), value -1
-  Event: time 1762504084.692300, -------------- SYN_REPORT ------------
-  Event: time 1762504084.714448, type 2 (EV_REL), code 0 (REL_X), value -1
-  Event: time 1762504084.714448, -------------- SYN_REPORT ------------
-  ```
+系统中存在以下三类输入设备：
 
-- **旋钮按下、保持、抬起事件**: `/dev/input/event1`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event1
-  Input driver version is 1.0.1
-  Input device ID: bus 0x19 vendor 0x1 product 0x1 version 0x100
-  Input device name: "gpio_keys"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 1 (EV_KEY)
-      Event code 28 (KEY_ENTER)
-  Key repeat handling:
-    Repeat type 20 (EV_REP)
-      Repeat code 0 (REP_DELAY)
-        Value    250
-      Repeat code 1 (REP_PERIOD)
-        Value     33
-  Properties:
-  Testing ... (interrupt to exit)
-  Event: time 1762504201.120498, type 1 (EV_KEY), code 28 (KEY_ENTER), value 1
-  Event: time 1762504201.120498, -------------- SYN_REPORT ------------
-  Event: time 1762504201.371193, type 1 (EV_KEY), code 28 (KEY_ENTER), value 2
-  Event: time 1762504201.721202, -------------- SYN_REPORT ------------
-  Event: time 1762504201.724694, type 1 (EV_KEY), code 28 (KEY_ENTER), value 0
-  Event: time 1762504201.724694, -------------- SYN_REPORT ------------
-  ```
+- 旋钮旋转事件
+- 旋钮按下/长按/松开事件
+- 触摸屏事件
 
-- **触摸屏事件**: `/dev/input/event2`
-  ```shell
-  root@kvm-72d6:~# evtest /dev/input/event2
-  Input driver version is 1.0.1
-  Input device ID: bus 0x18 vendor 0x0 product 0x0 version 0x0
-  Input device name: "hyn_ts"
-  Supported events:
-    Event type 0 (EV_SYN)
-    Event type 1 (EV_KEY)
-      Event code 325 (BTN_TOOL_FINGER)
-      Event code 330 (BTN_TOUCH)
-    Event type 3 (EV_ABS)
-      Event code 47 (ABS_MT_SLOT)
-        Value      0
-        Min        0
-        Max        5
-      Event code 48 (ABS_MT_TOUCH_MAJOR)
-        Value      0
-        Min        0
-        Max      255
-      Event code 50 (ABS_MT_WIDTH_MAJOR)
-        Value      0
-        Min        0
-        Max      200
-      Event code 53 (ABS_MT_POSITION_X)
-        Value      0
-        Min        0
-        Max      172
-      Event code 54 (ABS_MT_POSITION_Y)
-        Value      0
-        Min        0
-        Max      320
-      Event code 57 (ABS_MT_TRACKING_ID)
-        Value      0
-        Min        0
-        Max        5
-      Event code 58 (ABS_MT_PRESSURE)
-        Value      0
-        Min        0
-        Max      255
-  Properties:
-    Property type 1 (INPUT_PROP_DIRECT)
-  Testing ... (interrupt to exit)
-  Event: time 1762504306.703328, type 1 (EV_KEY), code 330 (BTN_TOUCH), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value 25
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value 0
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 53 (ABS_MT_POSITION_X), value 71
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 54 (ABS_MT_POSITION_Y), value 165
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 48 (ABS_MT_TOUCH_MAJOR), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 50 (ABS_MT_WIDTH_MAJOR), value 1
-  Event: time 1762504306.703328, type 3 (EV_ABS), code 58 (ABS_MT_PRESSURE), value 10
-  Event: time 1762504306.703328, -------------- SYN_REPORT ------------
-  Event: time 1762504306.749866, type 3 (EV_ABS), code 57 (ABS_MT_TRACKING_ID), value -1
-  Event: time 1762504306.749866, type 1 (EV_KEY), code 330 (BTN_TOUCH), value 0
-  Event: time 1762504306.749866, -------------- SYN_REPORT ------------
-  ```
+`/dev/input/eventN` 的编号可能因设备枚举顺序不同而变化，因此 **不要依赖固定的 event 编号**。需要通过 sysfs 中的设备名称来动态识别设备。
+
+设备名称可通过以下路径查询：
+
+```
+/sys/class/input/eventN/device/name
+```
+
+##### 典型设备映射
+
+| 输入类型 | 驱动名         | 上报事件类型             | 说明               |
+| ---- | ----------- | ------------------ | ---------------- |
+| 旋钮旋转 | `rotary@0`  | EV_REL / REL_X     | 用于增量调节、翻页或焦点移动   |
+| 旋钮按键 | `gpio_keys` | EV_KEY (KEY_ENTER) | 支持按下、松开及长按自动重复   |
+| 触摸屏  | `hyn_ts`    | EV_ABS / ABS_MT_*  | 上报坐标、压力、触摸点序号等信息 |
+
+##### 使用注意事项
+
+- 不要硬编码 `/dev/input/event0` 这类路径；应在运行时扫描 sysfs 解析设备编号。
+- 若未找到目标设备，则返回原始设备名用于提示和诊断。
+- 访问 `/dev/input` 设备通常需要 root 权限或 udev 规则放行。
+
+##### Python 示例：动态查找输入设备
+
+```python
+import os
+import re
+from typing import Dict
+
+class InputDeviceFinder:
+    """扫描 /sys/class/input，构建 eventN -> 设备名映射，并根据名称解析为对应的 /dev/input/eventN 路径。"""
+
+    def __init__(self, input_root: str = "/sys/class/input") -> None:
+        self.input_root = input_root
+        self.event_regex = re.compile(r"event(\\d+)$")
+        self.devices = self._get_event_device_names()
+
+    def _get_event_device_names(self) -> Dict[int, str]:
+        event_map: Dict[int, str] = {}
+
+        try:
+            for entry in os.scandir(self.input_root):
+                if not entry.is_dir():
+                    continue
+
+                m = self.event_regex.match(entry.name)
+                if not m:
+                    continue
+
+                try:
+                    event_num = int(m.group(1))
+                except ValueError:
+                    continue
+
+                name_path = os.path.join(entry.path, "device", "name")
+                if not os.path.exists(name_path):
+                    continue
+
+                try:
+                    with open(name_path, "r", encoding="utf-8") as f:
+                        name = f.readline().strip()
+                        if name:
+                            event_map[event_num] = name
+                except Exception:
+                    continue
+        except FileNotFoundError:
+            pass
+
+        return event_map
+
+    def find_devices(self, targets: Dict[str, str]) -> Dict[str, str]:
+        result: Dict[str, str] = {}
+
+        for role, name in targets.items():
+            found = False
+            for n, dev_name in self.devices.items():
+                if dev_name == name:
+                    result[role] = f"/dev/input/event{n}"
+                    found = True
+                    break
+            if not found:
+                result[role] = name
+
+        return result
+
+if __name__ == "__main__":
+    finder = InputDeviceFinder()
+    devices = finder.find_devices({
+        "rotary": "rotary@0",
+        "key": "gpio_keys",
+        "touch": "hyn_ts",
+    })
+
+    print("Detected devices:", devices)
+    # 输出示例： {'rotary': '/dev/input/event0', 'key': '/dev/input/event1', 'touch': '/dev/input/event2'}
+```
+
+##### 进一步建议
+
+- 若名称匹配失败，可进一步解析 `/proc/bus/input/devices` 或使用 `udevadm` / `libinput` 获取更丰富的设备信息。
+- 用户态程序可使用 `evdev` / `libinput` 读取事件。如果是服务程序，可在启动时缓存设备映射，并在设备变更时重新扫描。
+
+#### 自动加载第三方 Python 库
+
+这种方式适用于：
+
+- 你希望程序“按需加载”依赖
+
+- 你不想在镜像/固件里预置太多库
+
+- 你希望应用能开箱即用，无需用户提前处理依赖
+
+以下是完整可直接使用的类：
+
+```python
+import importlib
+import subprocess
+import sys
+
+class AutoImport:
+    @staticmethod
+    def import_package(pip_name: str, import_name: str | None = None):
+        import_name = import_name or pip_name
+
+        try:
+            package = importlib.import_module(import_name)
+            print(f"Package '{import_name}' imported successfully.")
+            return package
+        except ImportError:
+            print(f"Package '{import_name}' not found. Trying to install '{pip_name}'...")
+            AutoImport.install_package(pip_name)
+
+            package = importlib.import_module(import_name)
+            print(f"Package '{import_name}' imported successfully after installation.")
+            return package
+
+    @staticmethod
+    def install_package(pip_name: str):
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name])
+            print(f"Package '{pip_name}' installed successfully.")
+        except subprocess.CalledProcessError:
+            print(f"Failed to install '{pip_name}'. Check network or permissions.")
+```
+
+示例：按需加载 `evdev`，用于处理输入事件：
+
+```python
+evdev = AutoImport.import_package("evdev")
+InputDevice = evdev.InputDevice
+ecodes = evdev.ecodes
+```
+
+如果 `evdev` 已安装，则直接导入；如果未安装，将自动执行安装后再继续运行。
 
 ### 示例
 
 `apps` 目录中的几个示例，可能帮你更好的构建自己的应用：
+
 - `hello`: 基本显示功能
 - `drawo`: 带有触摸屏支持的绘图应用程序
 
