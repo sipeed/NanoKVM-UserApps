@@ -43,3 +43,11 @@ author_name = "Sipeed-iaw9lkm"
 interaction_requires_user_input = true
 files = [ "drawo/main.py", "drawo/app.toml",]
 
+[[apps]]
+folder = "samba"
+application_name = "samba"
+application_version = "1.0.0"
+application_descriptions = "Enable a Samba server for file transfer."
+author_name = "Sipeed-916BGAI"
+interaction_requires_user_input = true
+files = [ "samba/main.py", "samba/framebuffer.py","samba/input.py","samba/samba.py","samba/app.toml",]

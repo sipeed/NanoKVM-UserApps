@@ -1,0 +1,10 @@
+[application]
+name = "samba"
+version = "1.0.0"
+descriptions = "Enable a Samba server for file transfer."
+
+[author]
+name = "Sipeed-916BGAI"
+
+[interaction]
+requires_user_input = true
