@@ -5,7 +5,6 @@ descriptions = "Pomodoro Timer: 25-min work, 5-min break."
 
 [author]
 name = "Sipeed-bugu"
-email = "z2zmoujietongxue@126.com"
 
 [interaction]
 requires_user_input = false
