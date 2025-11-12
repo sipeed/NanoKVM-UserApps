@@ -1,0 +1,10 @@
+[application]
+name = "PWR-BTN"
+version = "1.0.0"
+descriptions = "Monitor the host's power status and manage power and reset operations."
+
+[author]
+name = "Sipeed-916BGAI"
+
+[interaction]
+requires_user_input = true

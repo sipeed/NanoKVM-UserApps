@@ -51,3 +51,12 @@ application_descriptions = "Enable a Samba server for file transfer."
 author_name = "Sipeed-916BGAI"
 interaction_requires_user_input = true
 files = [ "samba/main.py", "samba/framebuffer.py","samba/input.py","samba/samba.py","samba/app.toml",]
+
+[[apps]]
+folder = "PWR-BTN"
+application_name = "PWR-BTN"
+application_version = "1.0.0"
+application_descriptions = "Monitor the host's power status and manage power and reset operations."
+author_name = "Sipeed-916BGAI"
+interaction_requires_user_input = true
+files = [ "PWR-BTN/main.py", "PWR-BTN/framebuffer.py","PWR-BTN/input.py","PWR-BTN/atx.py","PWR-BTN/app.toml",]
