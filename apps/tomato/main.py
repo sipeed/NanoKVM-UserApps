@@ -264,10 +264,10 @@ class RGB565Display:
 class PomodoroTimer:
     def __init__(self, display):
         self.display = display
-        # self.work_time = 25 * 60  # 25 minutes work
-        # self.break_time = 5 * 60  # 5 minutes rest
-        self.work_time = 25  # 10s test
-        self.break_time = 10  # 10s test
+        self.work_time = 25 * 60  # 25 minutes work
+        self.break_time = 5 * 60  # 5 minutes rest
+        # self.work_time = 25  # 10s test
+        # self.break_time = 10  # 10s test
         self.is_work_mode = True
         self.current_time = self.work_time
         self.start_time = time.time()
