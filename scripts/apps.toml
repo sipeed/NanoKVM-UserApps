@@ -60,3 +60,12 @@ application_descriptions = "Monitor the host's power status and manage power and
 author_name = "Sipeed-916BGAI"
 interaction_requires_user_input = true
 files = [ "PWR-BTN/main.py", "PWR-BTN/framebuffer.py","PWR-BTN/input.py","PWR-BTN/atx.py","PWR-BTN/app.toml",]
+
+[[apps]]
+folder = "serial"
+application_name = "serial"
+application_version = "1.0.0"
+application_descriptions = "A simple serial display terminal."
+author_name = "Sipeed-916BGAI"
+interaction_requires_user_input = true
+files = [ "serial/main.py", "serial/framebuffer.py","serial/input.py","serial/uart.py","serial/app.toml",]

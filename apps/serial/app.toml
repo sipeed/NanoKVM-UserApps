@@ -1,0 +1,10 @@
+[application]
+name = "serial"
+version = "1.0.0"
+descriptions = "A simple serial display terminal."
+
+[author]
+name = "Sipeed-916BGAI"
+
+[interaction]
+requires_user_input = true
