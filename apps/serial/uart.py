@@ -92,7 +92,7 @@ class UartUI:
         self.open_btn_w = 80
         self.open_btn_h = 90
 
-        self.baud_rates = [9600, 19200, 38400, 57600, 115200, 230400]
+        self.baud_rates = [9600, 19200, 38400, 57600, 115200, 230400, 921600, 1500000, 2000000]
 
         self.selected_uart = 1
         self.selected_baud_index = 4
