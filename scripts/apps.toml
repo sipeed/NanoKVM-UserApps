@@ -1,11 +1,11 @@
 [[apps]]
-folder = "conway"
-application_name = "conway"
+folder = "serial"
+application_name = "serial"
 application_version = "1.0.0"
-application_descriptions = "Conway's Game of Life Simulator."
-author_name = "Sipeed-zepan"
-interaction_requires_user_input = false
-files = [ "conway/main.py", "conway/app.toml",]
+application_descriptions = "A simple serial display terminal."
+author_name = "Sipeed-916BGAI"
+interaction_requires_user_input = true
+files = [ "serial/framebuffer.py", "serial/app.toml", "serial/uart.py", "serial/input.py", "serial/main.py",]
 
 [[apps]]
 folder = "hello"
@@ -14,43 +14,7 @@ application_version = "1.0.0"
 application_descriptions = "Basic test to power on the display."
 author_name = "Sipeed-zepan"
 interaction_requires_user_input = false
-files = [ "hello/main.py", "hello/app.toml",]
-
-[[apps]]
-folder = "tomato"
-application_name = "tomato"
-application_version = "1.0.0"
-application_descriptions = "Pomodoro Timer: 25-min work, 5-min break."
-author_name = "Sipeed-bugu"
-interaction_requires_user_input = false
-files = [ "tomato/main.py", "tomato/app.toml",]
-
-[[apps]]
-folder = "coin"
-application_name = "coin"
-application_version = "1.0.0"
-application_descriptions = "Stock Market Viewer Demo."
-author_name = "Sipeed-zepan"
-interaction_requires_user_input = false
-files = [ "coin/main.py", "coin/app.toml",]
-
-[[apps]]
-folder = "drawo"
-application_name = "drawo"
-application_version = "1.0.0"
-application_descriptions = "A drawing board that can be used for drawing on a touchscreen"
-author_name = "Sipeed-iaw9lkm"
-interaction_requires_user_input = true
-files = [ "drawo/main.py", "drawo/app.toml",]
-
-[[apps]]
-folder = "samba"
-application_name = "samba"
-application_version = "1.0.0"
-application_descriptions = "Enable a Samba server for file transfer."
-author_name = "Sipeed-916BGAI"
-interaction_requires_user_input = true
-files = [ "samba/main.py", "samba/framebuffer.py","samba/input.py","samba/samba.py","samba/app.toml",]
+files = [ "hello/app.toml", "hello/main.py",]
 
 [[apps]]
 folder = "PWR-BTN"
@@ -59,13 +23,59 @@ application_version = "1.0.0"
 application_descriptions = "Monitor the host's power status and manage power and reset operations."
 author_name = "Sipeed-916BGAI"
 interaction_requires_user_input = true
-files = [ "PWR-BTN/main.py", "PWR-BTN/framebuffer.py","PWR-BTN/input.py","PWR-BTN/atx.py","PWR-BTN/app.toml",]
+files = [ "PWR-BTN/atx.py", "PWR-BTN/framebuffer.py", "PWR-BTN/app.toml", "PWR-BTN/input.py", "PWR-BTN/main.py",]
 
 [[apps]]
-folder = "serial"
-application_name = "serial"
+folder = "tomato"
+application_name = "tomato"
 application_version = "1.0.0"
-application_descriptions = "A simple serial display terminal."
+application_descriptions = "Pomodoro Timer: 25-min work, 5-min break."
+author_name = "Sipeed-bugu"
+interaction_requires_user_input = false
+files = [ "tomato/app.toml", "tomato/main.py",]
+
+[[apps]]
+folder = "drawo"
+application_name = "drawo"
+application_version = "1.0.0"
+application_descriptions = "A drawing board that can be used for drawing on a touchscreen"
+author_name = "Sipeed-iaw9lkm"
+interaction_requires_user_input = true
+files = [ "drawo/app.toml", "drawo/main.py",]
+
+[[apps]]
+folder = "coin"
+application_name = "coin"
+application_version = "1.0.0"
+application_descriptions = "Stock Market Viewer Demo."
+author_name = "Sipeed-zepan"
+interaction_requires_user_input = false
+files = [ "coin/app.toml", "coin/main.py",]
+
+[[apps]]
+folder = "conway"
+application_name = "conway"
+application_version = "1.0.0"
+application_descriptions = "Conway's Game of Life Simulator."
+author_name = "Sipeed-zepan"
+interaction_requires_user_input = false
+files = [ "conway/app.toml", "conway/main.py",]
+
+[[apps]]
+folder = "HW-UP"
+application_name = "HW-UP"
+application_version = "1.0.0"
+application_descriptions = "Update some hardware firmware"
+author_name = "Sipeed-bugu"
+interaction_requires_user_input = true
+files = [ "HW-UP/app.toml", "HW-UP/nanokvm_update_86102", "HW-UP/README.md", "HW-UP/main.py", "HW-UP/nanokvm_86102R2[43].bin",]
+
+[[apps]]
+folder = "samba"
+application_name = "samba"
+application_version = "1.0.0"
+application_descriptions = "Enable a Samba server for file transfer."
 author_name = "Sipeed-916BGAI"
 interaction_requires_user_input = true
-files = [ "serial/main.py", "serial/framebuffer.py","serial/input.py","serial/uart.py","serial/app.toml",]
+files = [ "samba/framebuffer.py", "samba/app.toml", "samba/samba.py", "samba/README.md", "samba/input.py", "samba/main.py",]
+
