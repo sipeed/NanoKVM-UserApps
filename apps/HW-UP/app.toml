@@ -1,0 +1,10 @@
+[application]
+name = "HW-UP"
+version = "1.0.0"
+descriptions = "Update some hardware firmware"
+
+[author]
+name = "Sipeed-bugu"
+
+[interaction]
+requires_user_input = true
